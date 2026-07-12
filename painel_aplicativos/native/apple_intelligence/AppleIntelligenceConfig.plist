@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>LocalModelIdentifier</key>
+	<string>com.apple.intelligence.foundation.3b</string>
+	<key>MaxTokenContextLimit</key>
+	<integer>2048</integer>
+	<key>SecureEnclaveEnforcement</key>
+	<true/>
+	<key>AllowPrivateCloudComputeFallbacks</key>
+	<true/>
+</dict>
+</plist>

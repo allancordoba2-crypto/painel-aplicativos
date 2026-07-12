@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screens/apple_intelligence_screen.dart';
 import 'screens/cadastro_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/home_screen.dart';
@@ -27,6 +28,7 @@ class PainelAplicativosApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/detalhes': (context) => const DetailsScreen(),
         '/cadastro': (context) => const CadastroScreen(),
+        '/apple-intelligence': (context) => const AppleIntelligenceScreen(),
       },
     );
   }
