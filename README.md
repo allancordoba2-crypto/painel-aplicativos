@@ -1,8 +1,21 @@
 # Painel de Aplicativos
 
-**Link para compartilhar:** https://github.com/allancordoba2-crypto/painel-aplicativos
+Fluxo: **Login → Listagem → Cadastro → Detalhes**, com `AppService` em memória (simulação de banco).
 
-Fluxo sem “mágicas”: **Login → Listagem → Cadastro → Detalhes**, com dados no `AppService` (memória = simulação de banco).
+## Segurança contínua (auto-updating)
+
+Este repositório inclui **segurança automática contínua**:
+
+| Recurso | Quando roda |
+|---------|-------------|
+| Dependabot | **Todo dia** (pub, pip, Actions) |
+| Secret pattern scan | Todo push/PR + **diário** |
+| CodeQL | Todo push/PR + **semanal** |
+| Dependency Review | Em todo PR |
+
+Veja [SECURITY.md](SECURITY.md) e [docs/SECURITY_HARDENING.md](docs/SECURITY_HARDENING.md).
+
+> **Recomendado:** tornar o repositório **Private** em Settings → General → Change visibility.
 
 ## Estrutura
 
@@ -12,23 +25,19 @@ painel_aplicativos/          # Flutter
     main.dart
     app_service.dart
     screens/
-modules/                    # Python (mesmo modelo)
+modules/                    # Python
   app_service.py
+.github/
+  dependabot.yml
+  workflows/
 ```
 
-## Rotas Flutter
-
-| Rota | Tela |
-|------|------|
-| `/` | Login |
-| `/home` | Listagem |
-| `/cadastro` | Formulário INSERT |
-| `/detalhes` | Componentes |
-
-## Login demo
+## Login demo (apenas desenvolvimento)
 
 - usuário: `admin`
 - senha: `admin`
+
+**Troque em produção.** Não use estas credenciais em ambientes reais.
 
 ## Rodar Flutter
 

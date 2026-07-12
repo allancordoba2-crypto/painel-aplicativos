@@ -1,0 +1,51 @@
+# Atualização automática de segurança e dependências — todos os dias
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 10
+    labels:
+      - "security"
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "security(actions)"
+
+  # Flutter / Dart (pub)
+  - package-ecosystem: "pub"
+    directory: "/painel_aplicativos"
+    schedule:
+      interval: "daily"
+      time: "06:15"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 10
+    labels:
+      - "security"
+      - "dependencies"
+      - "flutter"
+      - "automated"
+    commit-message:
+      prefix: "security(pub)"
+
+  # Python (se houver requirements)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:30"
+      timezone: "America/Sao_Paulo"
+    open-pull-requests-limit: 5
+    labels:
+      - "security"
+      - "dependencies"
+      - "python"
+      - "automated"
+    commit-message:
+      prefix: "security(pip)"
+    allow:
+      - dependency-type: "all"

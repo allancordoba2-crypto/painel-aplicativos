@@ -1,20 +1,23 @@
-# Link para compartilhar
+# Compartilhamento e segurança
 
-## Repositório público
+## Repositório
 
 https://github.com/allancordoba2-crypto/painel-aplicativos
 
-## Clone
+## Segurança automática
 
-```bash
-git clone https://github.com/allancordoba2-crypto/painel-aplicativos.git
-```
+- Dependabot diário
+- Scans em todo push + cron diário
+- CodeQL + Dependency Review
 
-## Links úteis
+Detalhes: [SECURITY.md](SECURITY.md)
 
-| Tipo | URL |
-|------|-----|
-| Repo | https://github.com/allancordoba2-crypto/painel-aplicativos |
-| Código Flutter | https://github.com/allancordoba2-crypto/painel-aplicativos/tree/main/painel_aplicativos |
-| Serviço Python | https://github.com/allancordoba2-crypto/painel-aplicativos/blob/main/modules/app_service.py |
-| ZIP download | https://github.com/allancordoba2-crypto/painel-aplicativos/archive/refs/heads/main.zip |
+## Tornar privado (recomendado)
+
+Settings → General → Danger Zone → **Change repository visibility** → Private
+
+Depois disso, o link só funciona para quem você convidar como colaborador.
+
+## Convite seguro (se privado)
+
+Settings → Collaborators → Add people
