@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../app_service.dart';
 import '../auth_service.dart';
 
-/// Listagem dinâmica dos aplicativos (dados vindos do AppService).
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -55,7 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Center(
               child: Text(
-                '${auth.nomeExibicao} (${auth.papel})',
+                auth.isApple
+                    ? '${auth.nomeExibicao} · Apple'
+                    : '${auth.nomeExibicao} (${auth.papel})',
                 style: const TextStyle(fontSize: 13),
               ),
             ),

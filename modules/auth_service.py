@@ -1,10 +1,4 @@
-"""
-Autenticação em memória — admin e usuário.
-
-Credenciais demo:
-  admin   / admin123    (papel: admin)
-  usuario / usuario123  (papel: usuario)
-"""
+"""Autenticação: admin, usuário e Apple."""
 
 from __future__ import annotations
 
@@ -12,20 +6,20 @@ from copy import deepcopy
 
 
 class AuthService:
-    """Simula tabela de usuários e sessão atual."""
-
     tabela_usuarios: list[dict[str, str]] = [
         {
             "usuario": "admin",
             "senha": "admin123",
             "nome": "Administrador",
             "papel": "admin",
+            "provedor": "local",
         },
         {
             "usuario": "usuario",
             "senha": "usuario123",
             "nome": "Usuário Padrão",
             "papel": "usuario",
+            "provedor": "local",
         },
     ]
 
@@ -41,6 +35,28 @@ class AuthService:
                 return sessao
         return None
 
+    def login_com_apple(
+        self,
+        *,
+        user_id: str = "demo-apple-id",
+        email: str = "",
+        nome: str = "Usuário Apple (Demo)",
+        demo: bool = True,
+    ) -> dict[str, str]:
+        papel = "admin" if email.lower() == "admin@local.dev" else "usuario"
+        provedor = "apple_demo" if demo else "apple"
+        sessao = {
+            "usuario": email if email else f"apple_{user_id}",
+            "nome": nome or (email if email else "Usuário Apple"),
+            "papel": papel,
+            "provedor": provedor,
+            "appleUserId": user_id,
+        }
+        if email:
+            sessao["email"] = email
+        AuthService.sessao_atual = sessao
+        return sessao
+
     def logout(self) -> None:
         AuthService.sessao_atual = None
 
@@ -53,8 +69,9 @@ class AuthService:
         return (AuthService.sessao_atual or {}).get("papel") == "admin"
 
     @property
-    def is_usuario(self) -> bool:
-        return (AuthService.sessao_atual or {}).get("papel") == "usuario"
+    def is_apple(self) -> bool:
+        p = (AuthService.sessao_atual or {}).get("provedor") or ""
+        return p in ("apple", "apple_demo")
 
     @property
     def nome_exibicao(self) -> str:
@@ -65,11 +82,6 @@ class AuthService:
     def papel(self) -> str:
         return (AuthService.sessao_atual or {}).get("papel") or ""
 
-
-if __name__ == "__main__":
-    auth = AuthService()
-    print("admin:", auth.login("admin", "admin123"))
-    print("is_admin:", auth.is_admin)
-    auth.logout()
-    print("usuario:", auth.login("usuario", "usuario123"))
-    print("is_usuario:", auth.is_usuario)
+    @property
+    def provedor(self) -> str:
+        return (AuthService.sessao_atual or {}).get("provedor") or "local"

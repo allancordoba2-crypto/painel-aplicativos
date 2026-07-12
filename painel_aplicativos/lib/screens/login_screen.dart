@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../auth_service.dart';
 
-/// Tela de login — admin e usuário.
+/// Tela de login — admin, usuário e Apple.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final auth = AuthService();
   String? erro;
   bool _mostrarSenha = false;
+  bool _carregandoApple = false;
 
   @override
   void dispose() {
@@ -41,6 +43,45 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => erro = null);
     Navigator.pushReplacementNamed(context, '/home');
+  }
+
+  Future<void> _entrarComApple() async {
+    setState(() {
+      _carregandoApple = true;
+      erro = null;
+    });
+
+    try {
+      final sessao = await auth.loginComApple(permitirDemo: true);
+      if (!mounted) return;
+
+      if (sessao == null) {
+        setState(() {
+          erro = 'Login Apple cancelado.';
+          _carregandoApple = false;
+        });
+        return;
+      }
+
+      if (sessao['provedor'] == 'apple_demo' && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Apple demo: configure Sign in with Apple no Xcode para o login real.',
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        erro = 'Falha no login Apple: $e';
+        _carregandoApple = false;
+      });
+    }
   }
 
   void _preencherDemo(String usuario, String senha) {
@@ -73,8 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Entre com conta de admin ou usuário',
+              'Admin, usuário ou Continuar com a Apple',
               style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 28),
             TextField(
@@ -107,13 +149,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             if (erro != null) ...[
               const SizedBox(height: 12),
-              Text(erro!, style: const TextStyle(color: Colors.red)),
+              Text(
+                erro!,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
             ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _entrar,
+                onPressed: _carregandoApple ? null : _entrar,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
@@ -122,18 +168,58 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Text('ENTRAR'),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 20),
+            const Row(
+              children: [
+                Expanded(child: Divider()),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('ou', style: TextStyle(color: Colors.grey)),
+                ),
+                Expanded(child: Divider()),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_carregandoApple)
+              const Padding(
+                padding: EdgeInsets.all(12),
+                child: CircularProgressIndicator(),
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: SignInWithAppleButton(
+                  onPressed: _entrarComApple,
+                  text: 'Continuar com a Apple',
+                  style: SignInWithAppleButtonStyle.black,
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                ),
+              ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: _carregandoApple ? null : _entrarComApple,
+              icon: const Icon(Icons.apple, size: 22, color: Colors.black),
+              label: const Text(
+                'Entrar com Apple (alternativo)',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+            const SizedBox(height: 24),
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Contas de demonstração',
+                'Contas locais de demonstração',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 8),
             Card(
               child: ListTile(
-                leading: const Icon(Icons.admin_panel_settings, color: Colors.blue),
+                leading: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.blue,
+                ),
                 title: const Text('Admin'),
                 subtitle: const Text('admin  /  admin123'),
                 trailing: const Icon(Icons.chevron_right),

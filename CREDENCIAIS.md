@@ -1,15 +1,10 @@
-# Credenciais de login (demonstração)
+# Credenciais de login
 
-| Papel | Usuário | Senha | Permissões |
-|-------|---------|-------|------------|
-| **Admin** | `admin` | `admin123` | Ver lista, detalhes, **cadastrar apps**, sair |
-| **Usuário** | `usuario` | `usuario123` | Ver lista e detalhes (**sem** cadastro) |
+| Método | Usuário | Senha | Papel |
+|--------|---------|-------|-------|
+| Local Admin | `admin` | `admin123` | admin |
+| Local Usuário | `usuario` | `usuario123` | usuario |
+| **Apple** | Conta Apple do iPhone | (nativo) | usuario |
+| Apple demo | `apple_demo` | — | usuario |
 
-## Arquivos
-
-- Flutter: `painel_aplicativos/lib/auth_service.dart`
-- Python: `modules/auth_service.py`
-
-## Importante
-
-Estas senhas são **apenas para demo local**. Em produção use hash (bcrypt/argon2), HTTPS e backend real.
+Guia Apple: `painel_aplicativos/docs/APPLE_SIGN_IN.md`
