@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../app_service.dart';
+import '../auth_service.dart';
 
 /// Listagem dinâmica dos aplicativos (dados vindos do AppService).
 class HomeScreen extends StatefulWidget {
@@ -11,11 +13,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final service = AppService();
+  final auth = AuthService();
   List<Map<String, dynamic>> dadosApps = [];
 
   @override
   void initState() {
     super.initState();
+    if (!auth.estaLogado) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/');
+        }
+      });
+      return;
+    }
     _recarregar();
   }
 
@@ -25,13 +36,36 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _sair() {
+    auth.logout();
+    Navigator.pushReplacementNamed(context, '/');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isAdmin = auth.isAdmin;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Painel de Aplicativos'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Center(
+              child: Text(
+                '${auth.nomeExibicao} (${auth.papel})',
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Sair',
+            onPressed: _sair,
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: dadosApps.isEmpty
           ? const Center(child: Text('Nenhum aplicativo cadastrado.'))
@@ -58,16 +92,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
-        onPressed: () async {
-          final atualizou = await Navigator.pushNamed(context, '/cadastro');
-          if (atualizou == true && mounted) {
-            _recarregar();
-          }
-        },
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      floatingActionButton: isAdmin
+          ? FloatingActionButton(
+              backgroundColor: Colors.blue,
+              onPressed: () async {
+                final atualizou =
+                    await Navigator.pushNamed(context, '/cadastro');
+                if (atualizou == true && mounted) {
+                  _recarregar();
+                }
+              },
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
     );
   }
 }

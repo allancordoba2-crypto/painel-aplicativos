@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../app_service.dart';
+import '../auth_service.dart';
 
-/// Formulário de cadastro de novo aplicativo.
+/// Formulário de cadastro de novo aplicativo (somente admin).
 class CadastroScreen extends StatefulWidget {
   const CadastroScreen({super.key});
 
@@ -14,6 +15,19 @@ class _CadastroScreenState extends State<CadastroScreen> {
   final plataformaController = TextEditingController();
   final versaoController = TextEditingController();
   final service = AppService();
+  final auth = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    if (!auth.isAdmin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -24,6 +38,7 @@ class _CadastroScreenState extends State<CadastroScreen> {
   }
 
   void _salvar() {
+    if (!auth.isAdmin) return;
     if (nomeController.text.trim().isEmpty) return;
 
     final novo = {

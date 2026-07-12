@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Tela de login simples (validação local, sem backend).
+import '../auth_service.dart';
+
+/// Tela de login — admin e usuário.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -11,7 +13,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final usuarioController = TextEditingController();
   final senhaController = TextEditingController();
+  final auth = AuthService();
   String? erro;
+  bool _mostrarSenha = false;
 
   @override
   void dispose() {
@@ -23,15 +27,28 @@ class _LoginScreenState extends State<LoginScreen> {
   void _entrar() {
     final user = usuarioController.text.trim();
     final pass = senhaController.text;
+
     if (user.isEmpty || pass.isEmpty) {
       setState(() => erro = 'Preencha usuário e senha.');
       return;
     }
-    if (user == 'admin' && pass == 'admin') {
-      Navigator.pushReplacementNamed(context, '/home');
+
+    final sessao = auth.login(user, pass);
+    if (sessao == null) {
+      setState(() => erro = 'Usuário ou senha inválidos.');
       return;
     }
-    setState(() => erro = 'Usuário ou senha inválidos.');
+
+    setState(() => erro = null);
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
+  void _preencherDemo(String usuario, String senha) {
+    setState(() {
+      usuarioController.text = usuario;
+      senhaController.text = senha;
+      erro = null;
+    });
   }
 
   @override
@@ -42,32 +59,50 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 24),
+            const Icon(Icons.lock_outline, size: 56, color: Colors.blue),
+            const SizedBox(height: 12),
             const Text(
               'Painel de Aplicativos',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text('admin / admin', style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 24),
+            const Text(
+              'Entre com conta de admin ou usuário',
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 28),
             TextField(
               controller: usuarioController,
+              textInputAction: TextInputAction.next,
               decoration: const InputDecoration(
                 labelText: 'Usuário',
+                prefixIcon: Icon(Icons.person_outline),
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: senhaController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: !_mostrarSenha,
+              onSubmitted: (_) => _entrar(),
+              decoration: InputDecoration(
                 labelText: 'Senha',
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock_outline),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _mostrarSenha ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() => _mostrarSenha = !_mostrarSenha);
+                  },
+                ),
               ),
             ),
             if (erro != null) ...[
@@ -85,6 +120,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: const Text('ENTRAR'),
+              ),
+            ),
+            const SizedBox(height: 28),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Contas de demonstração',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.admin_panel_settings, color: Colors.blue),
+                title: const Text('Admin'),
+                subtitle: const Text('admin  /  admin123'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _preencherDemo('admin', 'admin123'),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person, color: Colors.green),
+                title: const Text('Usuário'),
+                subtitle: const Text('usuario  /  usuario123'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _preencherDemo('usuario', 'usuario123'),
               ),
             ),
           ],
